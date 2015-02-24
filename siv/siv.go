@@ -135,7 +135,7 @@ func dbl(b []byte) {
 
 func shiftLeft(b []byte) {
 	overflow := byte(0)
-	for i := int(len(b) - 1); i >= 0; i-- {
+	for i := len(b) - 1; i >= 0; i-- {
 		v := b[i]
 		b[i] <<= 1
 		b[i] |= overflow
