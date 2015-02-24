@@ -159,9 +159,9 @@ func pad(b []byte, n int) []byte {
 func xorend(a, b []byte) []byte {
 	diff := len(a) - len(b)
 	left := a[:diff]
-	right := a[diff:]
+	right := make([]byte, len(a)-diff)
 	for i := range right {
-		right[i] ^= b[i]
+		right[i] = a[diff+i] ^ b[i]
 	}
 	return append(left, right...)
 }
