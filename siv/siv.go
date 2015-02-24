@@ -152,7 +152,7 @@ func xor(dst, src []byte) {
 func pad(b []byte, n int) []byte {
 	padded := make([]byte, n)
 	copy(padded, b)
-	padded[n-2] = 0x80
+	padded[len(b)] = 0x80
 	return padded
 }
 
