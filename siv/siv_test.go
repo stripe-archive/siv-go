@@ -109,3 +109,22 @@ func TestRoundTripBadCiphertext(t *testing.T) {
 		t.Fatalf("Plaintext returned instead of error: %x", actual)
 	}
 }
+
+func BenchmarkSeal(b *testing.B) {
+	key, _ := hex.DecodeString("fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff")
+	data, _ := hex.DecodeString("101112131415161718191a1b1c1d1e1f2021222324252627")
+	plaintext := make([]byte, 1024)
+
+	aead, err := New(key, aes.NewCipher)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ResetTimer()
+	b.ReportAllocs()
+	b.SetBytes(1024)
+
+	for i := 0; i < b.N; i++ {
+		aead.Seal(nil, nil, plaintext, data)
+	}
+}
