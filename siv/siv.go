@@ -13,20 +13,14 @@ import (
 )
 
 // New returns a new SIV AEAD with the given key and encryption algorithm. The
-// key must be 256, 384, or 512 bits long.
+// key must be twice the key size of the underlying algorithm.
 func New(key []byte, alg func([]byte) (cipher.Block, error)) (cipher.AEAD, error) {
-	if len(key) != 32 && len(key) != 48 && len(key) != 64 {
-		return nil, errInvalidKey
-	}
-
-	k1, k2 := key[:(len(key)/2)], key[(len(key)/2):]
-
-	mac, err := alg(k1)
+	mac, err := alg(key[:(len(key) / 2)])
 	if err != nil {
 		return nil, err
 	}
 
-	enc, err := alg(k2)
+	enc, err := alg(key[(len(key) / 2):])
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +73,7 @@ func (s *siv) Seal(dst, nonce, plaintext, data []byte) []byte {
 }
 
 var (
-	errOpen       = errors.New("message authentication failed")
-	errInvalidKey = errors.New("key must be 256, 384, or 512 bits long")
+	errOpen = errors.New("message authentication failed")
 )
 
 func ctr(v []byte) []byte {
