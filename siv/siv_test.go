@@ -31,7 +31,7 @@ func TestOverhead(t *testing.T) {
 }
 
 func TestDeterministicEncryption(t *testing.T) {
-	// Section A.1
+	// https://tools.ietf.org/html/rfc5297#appendix-A.1
 	key, _ := hex.DecodeString("fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff")
 	data, _ := hex.DecodeString("101112131415161718191a1b1c1d1e1f2021222324252627")
 	plaintext, _ := hex.DecodeString("112233445566778899aabbccddee")
