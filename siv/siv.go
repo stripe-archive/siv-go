@@ -85,8 +85,9 @@ func ctr(v []byte) []byte {
 }
 
 func s2v(h hash.Hash, data ...[]byte) []byte {
-	_, _ = h.Write(make([]byte, h.BlockSize()))
-	d := h.Sum(nil)
+	d := make([]byte, h.BlockSize())
+	_, _ = h.Write(d)
+	d = h.Sum(d[:0])
 	h.Reset()
 
 	for _, v := range data[:len(data)-1] {
@@ -115,7 +116,7 @@ func s2v(h hash.Hash, data ...[]byte) []byte {
 	}
 
 	_, _ = h.Write(t)
-	return h.Sum(nil)
+	return h.Sum(d[:0])
 }
 
 func dbl(b []byte) {
