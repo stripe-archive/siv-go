@@ -1,23 +1,21 @@
-package siv_test
+package siv
 
 import (
 	"bytes"
 	"crypto/aes"
 	"encoding/hex"
 	"testing"
-
-	"github.com/stripe/siv-go/siv"
 )
 
 func TestBadKeySize(t *testing.T) {
-	aead, err := siv.New(make([]byte, 16), aes.NewCipher)
+	aead, err := New(make([]byte, 16), aes.NewCipher)
 	if err == nil {
 		t.Fatalf("AEAD returned instead of error: %v", aead)
 	}
 }
 
 func TestNoNonceRequired(t *testing.T) {
-	aead, _ := siv.New(make([]byte, 32), aes.NewCipher)
+	aead, _ := New(make([]byte, 32), aes.NewCipher)
 
 	if v, want := aead.NonceSize(), 0; v != want {
 		t.Errorf("Nonce size was %d, but expected %d", v, want)
@@ -25,7 +23,7 @@ func TestNoNonceRequired(t *testing.T) {
 }
 
 func TestOverhead(t *testing.T) {
-	aead, _ := siv.New(make([]byte, 32), aes.NewCipher)
+	aead, _ := New(make([]byte, 32), aes.NewCipher)
 
 	if v, want := aead.Overhead(), aes.BlockSize; v != want {
 		t.Errorf("Overhead was %d, but expected %d", v, want)
@@ -39,7 +37,7 @@ func TestDeterministicEncryption(t *testing.T) {
 	plaintext, _ := hex.DecodeString("112233445566778899aabbccddee")
 	ciphertext, _ := hex.DecodeString("85632d07c6e8f37f950acd320a2ecc9340c02b9690c4dc04daef7f6afe5c")
 
-	aead, err := siv.New(key, aes.NewCipher)
+	aead, err := New(key, aes.NewCipher)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +53,7 @@ func TestRoundTrip(t *testing.T) {
 	data, _ := hex.DecodeString("101112131415161718191a1b1c1d1e1f2021222324252627")
 	plaintext, _ := hex.DecodeString("112233445566778899aabbccddee")
 
-	aead, err := siv.New(key, aes.NewCipher)
+	aead, err := New(key, aes.NewCipher)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +75,7 @@ func TestRoundTripBadData(t *testing.T) {
 	data, _ := hex.DecodeString("101112131415161718191a1b1c1d1e1f2021222324252627")
 	plaintext, _ := hex.DecodeString("112233445566778899aabbccddee")
 
-	aead, err := siv.New(key, aes.NewCipher)
+	aead, err := New(key, aes.NewCipher)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +95,7 @@ func TestRoundTripBadCiphertext(t *testing.T) {
 	data, _ := hex.DecodeString("101112131415161718191a1b1c1d1e1f2021222324252627")
 	plaintext, _ := hex.DecodeString("112233445566778899aabbccddee")
 
-	aead, err := siv.New(key, aes.NewCipher)
+	aead, err := New(key, aes.NewCipher)
 	if err != nil {
 		t.Fatal(err)
 	}
