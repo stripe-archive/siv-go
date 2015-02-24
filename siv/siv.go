@@ -52,7 +52,7 @@ func (s *siv) Overhead() int {
 func (s *siv) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
 	v, ciphertext := ciphertext[:s.Overhead()], ciphertext[s.Overhead():]
 	plaintext := make([]byte, len(ciphertext))
-	ctr := cipher.NewCTR(s.enc, ctr(v, s.enc.BlockSize()))
+	ctr := cipher.NewCTR(s.enc, ctr(v))
 	ctr.XORKeyStream(plaintext, ciphertext)
 
 	h, _ := cmac.NewWithCipher(s.mac)
@@ -70,7 +70,7 @@ func (s *siv) Seal(dst, nonce, plaintext, data []byte) []byte {
 
 	v := s2v(h, data, nonce, plaintext)
 
-	ctr := cipher.NewCTR(s.enc, ctr(v, s.enc.BlockSize()))
+	ctr := cipher.NewCTR(s.enc, ctr(v))
 	result := make([]byte, len(v)+len(plaintext))
 	copy(result, v)
 	ctr.XORKeyStream(result[len(v):], plaintext)
@@ -83,11 +83,11 @@ var (
 	errInvalidKey = errors.New("key must be 256, 384, or 512 bits long")
 )
 
-func ctr(v []byte, n int) []byte {
+func ctr(v []byte) []byte {
 	q := make([]byte, len(v))
 	copy(q, v)
-	q[n-4] &= 0x7f
-	q[n-8] &= 0x7f
+	q[len(q)-4] &= 0x7f
+	q[len(q)-8] &= 0x7f
 	return q
 }
 
