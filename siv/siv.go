@@ -50,7 +50,7 @@ func (s *siv) Overhead() int {
 }
 
 func (s *siv) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
-	v, ciphertext := ciphertext[:s.enc.BlockSize()], ciphertext[s.enc.BlockSize():]
+	v, ciphertext := ciphertext[:s.Overhead()], ciphertext[s.Overhead():]
 	plaintext := make([]byte, len(ciphertext))
 	ctr := cipher.NewCTR(s.enc, ctr(v, s.enc.BlockSize()))
 	ctr.XORKeyStream(plaintext, ciphertext)
