@@ -95,9 +95,14 @@ func s2v(h hash.Hash, data ...[]byte) []byte {
 			continue
 		}
 
-		_, _ = h.Write(v)
 		dbl(d)
-		xor(d, h.Sum(nil))
+
+		_, _ = h.Write(v)
+
+		for i, v := range h.Sum(nil) {
+			d[i] ^= v
+		}
+
 		h.Reset()
 	}
 
@@ -108,11 +113,14 @@ func s2v(h hash.Hash, data ...[]byte) []byte {
 		t = xorend(v, d)
 	} else {
 		dbl(d)
-		padded := pad(v, h.BlockSize())
-		for i, v := range d {
-			padded[i] ^= v
+
+		// pad and xor
+		for i, v := range v {
+			d[i] ^= v
 		}
-		t = padded
+		d[len(v)] ^= 0x80
+
+		t = d
 	}
 
 	_, _ = h.Write(t)
@@ -135,19 +143,6 @@ func shiftLeft(b []byte) {
 		b[i] |= overflow
 		overflow = (v & 0x80) >> 7
 	}
-}
-
-func xor(dst, src []byte) {
-	for i := range dst {
-		dst[i] ^= src[i]
-	}
-}
-
-func pad(b []byte, n int) []byte {
-	padded := make([]byte, n)
-	copy(padded, b)
-	padded[len(b)] = 0x80
-	return padded
 }
 
 func xorend(a, b []byte) []byte {
