@@ -108,9 +108,14 @@ func s2v(h hash.Hash, data ...[]byte) []byte {
 
 	v := data[len(data)-1]
 
-	var t []byte
 	if len(v) >= h.BlockSize() {
-		t = xorend(v, d)
+		// xorend
+		prefix := len(v) - len(d)
+		_, _ = h.Write(v[:prefix])
+		for i := range d {
+			d[i] ^= v[prefix+i]
+		}
+		_, _ = h.Write(d)
 	} else {
 		dbl(d)
 
@@ -120,10 +125,9 @@ func s2v(h hash.Hash, data ...[]byte) []byte {
 		}
 		d[len(v)] ^= 0x80
 
-		t = d
+		_, _ = h.Write(d)
 	}
 
-	_, _ = h.Write(t)
 	return h.Sum(d[:0])
 }
 
@@ -143,20 +147,4 @@ func shiftLeft(b []byte) {
 		b[i] |= overflow
 		overflow = (v & 0x80) >> 7
 	}
-}
-
-func xorend(a, b []byte) []byte {
-	diff := len(a) - len(b)
-
-	// leftmost
-	result := make([]byte, len(a))
-	copy(result, a[:diff])
-
-	// rightmost
-	l := len(a) - diff
-	for i := 0; i < l; i++ {
-		result[diff+i] = a[diff+i] ^ b[i]
-	}
-
-	return result
 }
