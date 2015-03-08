@@ -56,7 +56,7 @@ func (s *siv) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
 		return nil, errOpen
 	}
 
-	return plaintext, nil
+	return append(dst, plaintext...), nil
 }
 
 func (s *siv) Seal(dst, nonce, plaintext, data []byte) []byte {
