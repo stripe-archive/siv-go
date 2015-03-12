@@ -1,6 +1,6 @@
 // Package siv provides an implementation of the SIV-CMAC AEAD as described in
 // RFC 5297. SIV-CMAC does not require a nonce, allowing for both deterministic
-// and resistance to nonce re- or misuse.
+// encryption and resistance to nonce re- or misuse.
 package siv
 
 import (
